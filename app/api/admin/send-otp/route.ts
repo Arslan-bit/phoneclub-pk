@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   await transporter.sendMail({
     from: `"PhoneClub Admin" <${process.env.GMAIL_USER}>`,
-    to: process.env.GMAIL_USER,
+    to: process.env.ADMIN_EMAIL || process.env.GMAIL_USER,
     subject: "PhoneClub Admin OTP",
     html: `
       <div style="font-family:sans-serif;max-width:400px;margin:auto;padding:32px;background:#111;color:#fff;border-radius:12px;">
