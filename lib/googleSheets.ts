@@ -16,13 +16,16 @@ export async function appendOrderToSheet(order: {
   createdAt: string;
 }) {
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const key = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, "\n");
+  const rawKey = process.env.GOOGLE_PRIVATE_KEY;
   const sheetId = process.env.GOOGLE_SHEET_ID;
 
-  if (!email || !key || !sheetId) {
-    console.warn("Google Sheets not configured — skipping.");
+  if (!email || !rawKey || !sheetId) {
+    console.error("Google Sheets env vars missing:", { email: !!email, key: !!rawKey, sheetId: !!sheetId });
     return;
   }
+
+  // Handle both \n literal (from .env files) and actual newlines (from Vercel UI)
+  const key = rawKey.includes("\\n") ? rawKey.replace(/\\n/g, "\n") : rawKey;
 
   const auth = new google.auth.JWT({
     email,
