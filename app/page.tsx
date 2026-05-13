@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
@@ -8,8 +6,14 @@ import { Shield, Truck, RotateCcw, Zap, Star, ArrowRight, ChevronRight } from "l
 
 type FeaturedProduct = Awaited<ReturnType<typeof getFeaturedProducts>>[number];
 
+export const dynamic = "force-dynamic";
+
 async function getFeaturedProducts() {
-  return prisma.product.findMany({ where: { featured: true }, take: 8 });
+  try {
+    return await prisma.product.findMany({ where: { featured: true }, take: 8 });
+  } catch {
+    return [];
+  }
 }
 
 const categories = [
