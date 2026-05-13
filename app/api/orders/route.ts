@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   });
 
   const itemsSummary = order.items
-    .map((i) => `${i.product.name} x${i.quantity}`)
+    .map((i: { product: { name: string }; quantity: number }) => `${i.product.name} x${i.quantity}`)
     .join(", ");
 
   appendOrderToSheet({
