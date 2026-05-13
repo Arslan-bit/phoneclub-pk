@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import type { Product } from "@prisma/client";
 import ProductCard from "@/components/ProductCard";
 import HeroClient from "@/components/HeroClient";
 import { Shield, Truck, RotateCcw, Zap, Star, ArrowRight, ChevronRight } from "lucide-react";
@@ -127,7 +128,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featured.map((product) => (
+              {featured.map((product: Product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
