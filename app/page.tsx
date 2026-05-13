@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import type { Product } from "@prisma/client";
 import ProductCard from "@/components/ProductCard";
 import HeroClient from "@/components/HeroClient";
 import { Shield, Truck, RotateCcw, Zap, Star, ArrowRight, ChevronRight } from "lucide-react";
+
+type FeaturedProduct = Awaited<ReturnType<typeof getFeaturedProducts>>[number];
 
 async function getFeaturedProducts() {
   return prisma.product.findMany({ where: { featured: true }, take: 8 });
@@ -128,7 +129,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featured.map((product: Product) => (
+              {featured.map((product: FeaturedProduct) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
