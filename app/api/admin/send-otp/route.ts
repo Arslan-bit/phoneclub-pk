@@ -6,8 +6,12 @@ import nodemailer from "nodemailer";
 export async function POST(req: NextRequest) {
   const { password } = await req.json();
 
-  if (password !== process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ error: "Invalid password" }, { status: 401 });
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  console.log("ENV check - ADMIN_PASSWORD set:", !!adminPassword, "length:", adminPassword?.length);
+  console.log("Input length:", password?.length);
+
+  if (password !== adminPassword) {
+    return NextResponse.json({ error: "Invalid password", debug: !adminPassword ? "ADMIN_PASSWORD env var not set" : "Password mismatch" }, { status: 401 });
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
