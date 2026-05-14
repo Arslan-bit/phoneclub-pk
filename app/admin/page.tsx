@@ -39,42 +39,61 @@ const statusIcons: Record<string, React.ReactNode> = {
 
 const TABS = ["all", "pending", "confirmed", "shipped", "delivered", "cancelled"];
 
-function printOrder(order: Order) {
+function orderHTML(order: Order) {
   const items = order.items.map((i) => `${i.product.name} x${i.quantity} — PKR ${(i.price * i.quantity).toLocaleString()}`).join("\n");
-  const win = window.open("", "_blank", "width=600,height=700");
+  return `
+    <div class="page">
+      <h1>PhoneClub.pk — Shipping Label</h1>
+      <p class="meta">Order ID: ${order.id} &nbsp;|&nbsp; Date: ${new Date(order.createdAt).toLocaleDateString("en-PK")} &nbsp;|&nbsp; Status: ${order.status.toUpperCase()}</p>
+      <div class="divider"></div>
+      <div class="label">Customer Name</div><div class="value">${order.customerName}</div>
+      <div class="label">Phone</div><div class="value">${order.phone}</div>
+      ${order.instagramId ? `<div class="label">Instagram</div><div class="value">${order.instagramId}</div>` : ""}
+      ${order.email ? `<div class="label">Email</div><div class="value">${order.email}</div>` : ""}
+      <div class="label">Delivery Address</div><div class="value">${order.address}, ${order.city}</div>
+      <div class="divider"></div>
+      <div class="label">Items Ordered</div>
+      <div class="items">${items}</div>
+      <div class="divider"></div>
+      <div class="label">Payment Method</div><div class="value">${order.paymentMethod}</div>
+      <div class="label">Transaction ID</div><div class="value">${order.transactionId || "—"}</div>
+      <div class="label">Total Amount</div><div class="total">PKR ${order.total.toLocaleString()}</div>
+      <div class="divider"></div>
+      <div class="footer">PhoneClub.pk — Premium iPhone & Mobile Accessories</div>
+    </div>
+  `;
+}
+
+const printStyles = `
+  <style>
+    body { font-family: Arial, sans-serif; color: #000; margin: 0; }
+    .page { padding: 32px; page-break-after: always; }
+    .page:last-child { page-break-after: avoid; }
+    h1 { font-size: 20px; margin-bottom: 4px; }
+    .meta { color: #666; font-size: 12px; margin-bottom: 0; }
+    .label { font-size: 11px; color: #666; margin-top: 12px; text-transform: uppercase; letter-spacing: 1px; }
+    .value { font-size: 14px; font-weight: bold; margin-top: 2px; }
+    .divider { border-top: 1px solid #ddd; margin: 16px 0; }
+    .items { white-space: pre-line; font-size: 13px; line-height: 1.8; }
+    .total { font-size: 18px; font-weight: bold; }
+    .footer { margin-top: 24px; font-size: 11px; color: #999; text-align: center; }
+    @media print { .page { padding: 24px; } }
+  </style>
+`;
+
+function printOrder(order: Order) {
+  const win = window.open("", "_blank", "width=650,height=750");
   if (!win) return;
-  win.document.write(`
-    <html><head><title>Order #${order.id.slice(0, 8)}</title>
-    <style>
-      body { font-family: Arial, sans-serif; padding: 32px; color: #000; }
-      h1 { font-size: 20px; margin-bottom: 4px; }
-      .label { font-size: 11px; color: #666; margin-top: 12px; text-transform: uppercase; letter-spacing: 1px; }
-      .value { font-size: 14px; font-weight: bold; margin-top: 2px; }
-      .divider { border-top: 1px solid #ddd; margin: 16px 0; }
-      .items { white-space: pre-line; font-size: 13px; line-height: 1.8; }
-      .total { font-size: 18px; font-weight: bold; color: #000; }
-      .footer { margin-top: 24px; font-size: 11px; color: #999; text-align: center; }
-    </style></head><body>
-    <h1>PhoneClub.pk — Shipping Label</h1>
-    <p style="color:#666;font-size:12px;">Order ID: ${order.id} &nbsp;|&nbsp; Date: ${new Date(order.createdAt).toLocaleDateString("en-PK")}</p>
-    <div class="divider"></div>
-    <div class="label">Customer Name</div><div class="value">${order.customerName}</div>
-    <div class="label">Phone</div><div class="value">${order.phone}</div>
-    ${order.instagramId ? `<div class="label">Instagram</div><div class="value">${order.instagramId}</div>` : ""}
-    ${order.email ? `<div class="label">Email</div><div class="value">${order.email}</div>` : ""}
-    <div class="label">Delivery Address</div><div class="value">${order.address}, ${order.city}</div>
-    <div class="divider"></div>
-    <div class="label">Items Ordered</div>
-    <div class="items">${items}</div>
-    <div class="divider"></div>
-    <div class="label">Payment Method</div><div class="value">${order.paymentMethod}</div>
-    <div class="label">Transaction ID</div><div class="value">${order.transactionId || "—"}</div>
-    <div class="label">Total Amount</div><div class="total">PKR ${order.total.toLocaleString()}</div>
-    <div class="divider"></div>
-    <div class="footer">PhoneClub.pk — Premium iPhone & Mobile Accessories</div>
-    <script>window.onload = () => { window.print(); }</script>
-    </body></html>
-  `);
+  win.document.write(`<html><head><title>Order #${order.id.slice(0, 8)}</title>${printStyles}</head><body>${orderHTML(order)}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  win.document.close();
+}
+
+function printAllOrders(orders: Order[], label: string) {
+  if (orders.length === 0) return;
+  const win = window.open("", "_blank", "width=650,height=750");
+  if (!win) return;
+  const body = orders.map(orderHTML).join("");
+  win.document.write(`<html><head><title>${label} Orders — PhoneClub.pk</title>${printStyles}</head><body>${body}<script>window.onload=()=>window.print()<\/script></body></html>`);
   win.document.close();
 }
 
@@ -192,6 +211,16 @@ export default function AdminDashboard() {
                   </span>
                 </button>
               ))}
+            </div>
+            <div className="mt-3">
+              <button
+                onClick={() => printAllOrders(filteredOrders, activeTab === "all" ? "All" : activeTab)}
+                disabled={filteredOrders.length === 0}
+                className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-400 disabled:opacity-40 text-black text-xs font-bold rounded-xl transition-colors"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                Print All {activeTab === "all" ? "" : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Orders ({loading ? "..." : filteredOrders.length})
+              </button>
             </div>
           </div>
 
