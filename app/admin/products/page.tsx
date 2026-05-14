@@ -32,6 +32,7 @@ const empty = {
   images: '["https://via.placeholder.com/400x400?text=Product"]',
   featured: false,
   badge: "",
+  videoUrl: "",
 };
 
 export default function AdminProductsPage() {
@@ -92,6 +93,7 @@ export default function AdminProductsPage() {
       images: p.images,
       featured: p.featured,
       badge: p.badge || "",
+      videoUrl: (p as Product & { videoUrl?: string }).videoUrl || "",
     });
     setShowForm(true);
   };
@@ -109,6 +111,7 @@ export default function AdminProductsPage() {
       images: form.images,
       featured: form.featured,
       badge: form.badge || null,
+      videoUrl: form.videoUrl || "",
       rating: 0,
       reviewCount: 0,
     };
@@ -294,6 +297,17 @@ export default function AdminProductsPage() {
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     rows={3}
                     className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-yellow-600/50 resize-none"
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <label className="block text-gray-400 text-xs mb-1.5">YouTube Video URL <span className="text-gray-600">(optional)</span></label>
+                  <input
+                    type="url"
+                    value={form.videoUrl}
+                    onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-red-600/50"
                   />
                 </div>
 

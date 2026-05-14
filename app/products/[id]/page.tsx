@@ -7,6 +7,14 @@ import { useCart } from "@/lib/store";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
+function YouTubeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  );
+}
+
 interface Product {
   id: string;
   name: string;
@@ -14,6 +22,7 @@ interface Product {
   price: number;
   originalPrice?: number | null;
   images: string;
+  videoUrl: string;
   rating: number;
   reviewCount: number;
   badge?: string | null;
@@ -78,39 +87,67 @@ export default function ProductDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Images */}
           <div>
-            <motion.div
-              key={selectedImage}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="relative h-96 bg-[#111111] rounded-2xl border border-white/5 overflow-hidden mb-4"
-            >
-              <Image
-                src={images[selectedImage] || "/images/placeholder.png"}
-                alt={product.name}
-                fill
-                className="object-contain p-8"
-                onError={(e) => { (e.target as HTMLImageElement).src = "/images/placeholder.png"; }}
-              />
+            <div className="relative h-96 bg-[#111111] rounded-2xl border border-white/5 overflow-hidden mb-4" style={{ perspective: "1000px" }}>
+              <motion.div
+                key={selectedImage}
+                initial={{ rotateY: 90, opacity: 0 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="w-full h-full relative"
+              >
+                <Image
+                  src={images[selectedImage] || "/images/placeholder.png"}
+                  alt={product.name}
+                  fill
+                  className="object-contain p-8"
+                  onError={(e) => { (e.target as HTMLImageElement).src = "/images/placeholder.png"; }}
+                />
+              </motion.div>
               {discount > 0 && (
                 <span className="absolute top-4 right-4 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
                   -{discount}%
                 </span>
               )}
-            </motion.div>
+              {images.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <button key={i} onClick={() => setSelectedImage(i)}
+                      className={`w-2 h-2 rounded-full transition-all ${i === selectedImage ? "bg-yellow-400 w-4" : "bg-white/30"}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
             {images.length > 1 && (
-              <div className="flex gap-3">
+              <div className="flex gap-3 mb-4">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                      i === selectedImage ? "border-yellow-500" : "border-white/10 hover:border-yellow-500/40"
+                      i === selectedImage ? "border-yellow-500 scale-105" : "border-white/10 hover:border-yellow-500/40"
                     }`}
                   >
                     <Image src={img} alt="" fill className="object-cover" onError={(e) => { (e.target as HTMLImageElement).src = "/images/placeholder.png"; }} />
                   </button>
                 ))}
               </div>
+            )}
+
+            {product.videoUrl && (
+              <a
+                href={product.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 w-full px-4 py-3 bg-red-600/10 hover:bg-red-600/20 border border-red-600/30 rounded-xl transition-all group"
+              >
+                <span className="text-red-500 group-hover:text-red-400 transition-colors">
+                  <YouTubeIcon />
+                </span>
+                <span className="text-white text-sm font-medium">Watch Product Video</span>
+                <span className="ml-auto text-gray-500 text-xs">YouTube →</span>
+              </a>
             )}
           </div>
 
