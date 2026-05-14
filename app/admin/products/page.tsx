@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, X, Save, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Save, Loader2, Upload, ImagePlus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
@@ -41,6 +41,29 @@ export default function AdminProductsPage() {
   const [saving, setSaving] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(empty);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadImage = async (file: File) => {
+    setUploadingImage(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    setUploadingImage(false);
+    if (data.url) {
+      const current = JSON.parse(form.images) as string[];
+      setForm({ ...form, images: JSON.stringify([...current, data.url]) });
+    } else {
+      alert("Upload failed: " + (data.error || "Unknown error"));
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const current = JSON.parse(form.images) as string[];
+    current.splice(index, 1);
+    setForm({ ...form, images: JSON.stringify(current) });
+  };
 
   const fetchProducts = () => {
     fetch("/api/products")
@@ -275,14 +298,48 @@ export default function AdminProductsPage() {
                 </div>
 
                 <div className="mt-4">
-                  <label className="block text-gray-400 text-xs mb-1.5">Images (JSON array of URLs)</label>
-                  <textarea
-                    value={form.images}
-                    onChange={(e) => setForm({ ...form, images: e.target.value })}
-                    rows={2}
-                    className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-yellow-600/50 resize-none"
-                    placeholder='["https://url1.jpg", "https://url2.jpg"]'
+                  <label className="block text-gray-400 text-xs mb-1.5">Product Images</label>
+                  <div className="flex flex-wrap gap-3 mb-3">
+                    {(JSON.parse(form.images) as string[]).map((url, i) => (
+                      <div key={i} className="relative w-20 h-20 rounded-xl overflow-hidden border border-white/10 group">
+                        <Image src={url} alt="" fill className="object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(i)}
+                          className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                        >
+                          <X className="w-5 h-5 text-red-400" />
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="w-20 h-20 rounded-xl border-2 border-dashed border-white/20 hover:border-yellow-500/50 flex flex-col items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                    >
+                      {uploadingImage ? (
+                        <Loader2 className="w-5 h-5 text-yellow-400 animate-spin" />
+                      ) : (
+                        <>
+                          <ImagePlus className="w-5 h-5 text-gray-500" />
+                          <span className="text-gray-600 text-xs">Upload</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) uploadImage(file);
+                      e.target.value = "";
+                    }}
                   />
+                  <p className="text-gray-600 text-xs">Click the + box to upload images. Hover an image to remove it.</p>
                 </div>
 
                 <div className="flex justify-end gap-3 mt-6">
