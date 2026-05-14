@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useCart } from "@/lib/store";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CheckCircle, Loader2, ShoppingBag, MapPin, Phone, Mail, User, AtSign, Hash, Copy, Check } from "lucide-react";
+import { CheckCircle, Loader2, ShoppingBag, MapPin, Phone, Mail, User, AtSign, Hash, Copy, Check, ImagePlus, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { FormEvent } from "react";
 
@@ -57,6 +57,20 @@ export default function CheckoutPage() {
     transactionId: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [screenshot, setScreenshot] = useState("");
+  const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
+  const screenshotInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadScreenshot = async (file: File) => {
+    setUploadingScreenshot(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: fd });
+    const data = await res.json();
+    setUploadingScreenshot(false);
+    if (data.url) setScreenshot(data.url);
+    else alert("Upload failed: " + (data.error || "Unknown error"));
+  };
 
   const selectedPayment = PAYMENT_METHODS.find((p) => p.id === form.paymentMethod)!;
 
@@ -85,6 +99,7 @@ export default function CheckoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          paymentScreenshot: screenshot,
           total: total(),
           items: items.map((i) => ({ productId: i.id, quantity: i.quantity, price: i.price })),
         }),
@@ -301,6 +316,53 @@ export default function CheckoutPage() {
                   </div>
                   {errors.transactionId && <p className="text-red-400 text-xs mt-1">{errors.transactionId}</p>}
                   <p className="text-gray-600 text-xs mt-1">Send the payment first, then paste your Transaction ID here</p>
+                </div>
+
+                {/* Payment Screenshot Upload */}
+                <div className="mt-5">
+                  <label className="block text-gray-400 text-xs mb-1.5">Payment Screenshot <span className="text-gray-600">(optional but recommended)</span></label>
+                  {screenshot ? (
+                    <div className="relative inline-block">
+                      <div className="relative w-40 h-40 rounded-xl overflow-hidden border border-yellow-500/30">
+                        <Image src={screenshot} alt="Payment screenshot" fill className="object-cover" />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setScreenshot("")}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-400 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5 text-white" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => screenshotInputRef.current?.click()}
+                      disabled={uploadingScreenshot}
+                      className="w-full border-2 border-dashed border-white/10 hover:border-yellow-500/40 rounded-xl py-6 flex flex-col items-center gap-2 transition-colors disabled:opacity-50"
+                    >
+                      {uploadingScreenshot ? (
+                        <Loader2 className="w-6 h-6 text-yellow-400 animate-spin" />
+                      ) : (
+                        <>
+                          <ImagePlus className="w-6 h-6 text-gray-600" />
+                          <span className="text-gray-500 text-sm">Upload Payment Screenshot</span>
+                          <span className="text-gray-700 text-xs">PNG, JPG supported</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <input
+                    ref={screenshotInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) uploadScreenshot(file);
+                      e.target.value = "";
+                    }}
+                  />
                 </div>
               </div>
             </div>

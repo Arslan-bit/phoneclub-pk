@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const {
     customerName, email, phone, instagramId,
-    address, city, total, paymentMethod, transactionId, items,
+    address, city, total, paymentMethod, transactionId, paymentScreenshot, items,
   } = body;
 
   if (!customerName || !phone || !address || !city || !items?.length) {
@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
       total,
       paymentMethod: paymentMethod || "Easypaisa",
       transactionId: transactionId || "",
+      paymentScreenshot: paymentScreenshot || "",
       items: {
         create: items.map((item: { productId: string; quantity: number; price: number }) => ({
           productId: item.productId,

@@ -14,6 +14,7 @@ interface Order {
   status: string;
   paymentMethod: string;
   transactionId: string;
+  paymentScreenshot: string;
   createdAt: string;
   items: { quantity: number; product: { name: string } }[];
 }
@@ -168,7 +169,12 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3 text-gray-400 text-xs">{order.city}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs">{order.paymentMethod}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs font-mono">
-                        {order.transactionId || <span className="text-gray-700">—</span>}
+                        <div>{order.transactionId || <span className="text-gray-700">—</span>}</div>
+                        {order.paymentScreenshot && (
+                          <a href={order.paymentScreenshot} target="_blank" rel="noopener noreferrer" className="text-yellow-400 hover:text-yellow-300 text-xs underline mt-1 block">
+                            View Screenshot
+                          </a>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[order.status] || "bg-gray-500/10 text-gray-400"}`}>

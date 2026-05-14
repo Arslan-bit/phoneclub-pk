@@ -36,8 +36,9 @@ model Order {
   city          String
   total         Float
   status        String      @default("pending")
-  paymentMethod String      @default("Easypaisa")
-  transactionId String      @default("")
+  paymentMethod     String      @default("Easypaisa")
+  transactionId     String      @default("")
+  paymentScreenshot String      @default("")
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   items         OrderItem[]
