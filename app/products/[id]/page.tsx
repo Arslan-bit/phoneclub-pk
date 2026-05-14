@@ -46,6 +46,16 @@ export default function ProductDetailPage() {
       .then((data) => { setProduct(data); setLoading(false); });
   }, [id]);
 
+  useEffect(() => {
+    if (!product) return;
+    const images = JSON.parse(product.images) as string[];
+    if (images.length <= 1) return;
+    const interval = setInterval(() => {
+      setSelectedImage((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [product]);
+
   if (loading) {
     return (
       <div className="min-h-screen pt-24 px-4 flex items-center justify-center">
