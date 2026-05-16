@@ -17,6 +17,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  await prisma.product.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+  try {
+    await prisma.orderItem.deleteMany({ where: { productId: id } });
+    await prisma.product.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error("Delete product error:", err);
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
+  }
 }
