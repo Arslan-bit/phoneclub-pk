@@ -223,7 +223,7 @@ export default function ProductDetailPage() {
             <div className="grid grid-cols-2 gap-3 mt-6">
               {[
                 { icon: Shield, text: "Genuine Product" },
-                { icon: Truck, text: "Fast Delivery" },
+                { icon: Truck, text: "Free Delivery in 2 Days" },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-2 bg-[#111111] rounded-xl p-3 border border-white/5">
                   <Icon className="w-4 h-4 text-yellow-500 flex-shrink-0" />

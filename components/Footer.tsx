@@ -58,7 +58,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-500 text-sm leading-relaxed mb-5">
-              Pakistan&apos;s premium destination for iPhone and mobile accessories. Quality products, fast delivery across Pakistan.
+              Pakistan&apos;s premium destination for iPhone and mobile accessories. Quality products, free delivery in 2 days across Pakistan.
             </p>
 
             {/* Social Icons */}
@@ -153,9 +153,11 @@ export default function Footer() {
             <span>•</span>
             <span>Meezan Bank</span>
             <span>•</span>
-            <span>Fast Delivery</span>
+            <span>Free Delivery in 2 Days</span>
             <span>•</span>
-            <span>Easy Returns</span>
+            <span>Easy Return in 10 Days</span>
+            <span>•</span>
+            <span>Advance Payment</span>
           </div>
         </div>
       </div>

@@ -27,9 +27,9 @@ const categories = [
 
 const features = [
   { icon: Shield, title: "100% Genuine", desc: "All products are authentic and quality-tested" },
-  { icon: Truck, title: "Fast Delivery", desc: "Nationwide delivery within 2-4 working days" },
-  { icon: RotateCcw, title: "Easy Returns", desc: "7-day hassle-free return policy" },
-  { icon: Zap, title: "COD Available", desc: "Pay cash on delivery — no advance needed" },
+  { icon: Truck, title: "Free Delivery in 2 Days", desc: "Free nationwide delivery within just 2 working days" },
+  { icon: RotateCcw, title: "Easy Return in 10 Days", desc: "10-day hassle-free return policy" },
+  { icon: Zap, title: "Advance Payment", desc: "Secure advance payment via Easypaisa or Meezan Bank" },
 ];
 
 export default async function HomePage() {
@@ -169,7 +169,7 @@ export default async function HomePage() {
               Protect Your <span className="gold-gradient">iPhone</span> Today
             </h2>
             <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-              Browse 500+ premium accessories designed for iPhone. Cash on delivery available everywhere in Pakistan.
+              Browse 500+ premium accessories designed for iPhone. Free delivery in just 2 days across Pakistan.
             </p>
             <Link href="/products">
               <button className="px-10 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold rounded-xl hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-xl shadow-yellow-500/25 text-sm">
