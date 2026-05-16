@@ -49,7 +49,7 @@ export default function IPhoneHero3D() {
       {/* Real iPhone image — centered over canvas */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
-          className="relative w-48 h-[380px] md:w-56 md:h-[420px] drop-shadow-2xl"
+          className="relative w-72 h-[520px] md:w-80 md:h-[580px] lg:w-96 lg:h-[640px] drop-shadow-2xl"
           style={{ animation: "iphone-rotate 8s ease-in-out infinite" }}
         >
           <Image
